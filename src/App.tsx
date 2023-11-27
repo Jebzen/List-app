@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import Tasks from './pages/Tasks';
+import TaskPage from './pages/TaskPage';
 import Layout from './Layout';
 import NotFound from './pages/NotFound';
 
@@ -9,8 +8,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="/tasks" element={<Tasks />} />
+          <Route index element={<TaskPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

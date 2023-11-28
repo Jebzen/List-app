@@ -3,4 +3,5 @@ export default interface ITaskProps {
   text: string;
   completed: boolean;
   createdAt: string;
+  deleteEvent?: (id: number) => void;
 }

@@ -1,14 +1,18 @@
-import TaskProps from '../util/ITaskProps';
+import ITaskProps from '../util/ITaskProps';
 
-export default function Task(props: TaskProps) {
-  const handleDelete = () => {
-    // Handle delete logic here
-  };
+export default function Task(props: ITaskProps) {
+  function handleDelete() {
+    if (props.deleteEvent) {
+      props.deleteEvent(props.id);
+    }
+  }
 
   return (
-    <div>
-      <p>{props.text}</p>
-      <button onClick={handleDelete}>Delete</button>
+    <div id={props.id.toString()}>
+      <p>
+        {props.text} {props.id.toString()}
+      </p>
+      {props.deleteEvent && <button onClick={handleDelete}>Delete</button>}
     </div>
   );
 }

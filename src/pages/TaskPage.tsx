@@ -8,45 +8,60 @@ export default function TaskPage() {
   const [newTask, setNewTask] = useState<string>('');
   const [intId, setIntId] = useState<number>(0);
 
+  // Fetch tasks from localStorage if they exist, else fetch from tasksData.json
   useEffect(() => {
-    // Simulate an API call
     const fetchTasks = async () => {
-      // Simulated delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const tmpTasks: TaskProps[] = tasksData.tasks as TaskProps[];
-      setTasks(tmpTasks);
-      setIntId(tmpTasks.length);
+      const jsonParse = localStorage.getItem('tasks');
+      if (jsonParse !== null) {
+        console.log('here');
+        const savedTasks = JSON.parse(jsonParse);
+        const tmpTasks: TaskProps[] = savedTasks as TaskProps[];
+        setTasks(tmpTasks);
+        if (tmpTasks.length !== 0) {
+          setIntId(tmpTasks[tmpTasks.length - 1].id + 1);
+        }
+      } else {
+        // Simulated delay
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const tmpTasks: TaskProps[] = tasksData.tasks as TaskProps[];
+        setTasks(tmpTasks);
+        if (tmpTasks.length !== 0) {
+          setIntId(tmpTasks[tmpTasks.length - 1].id + 1);
+        }
+      }
     };
 
     fetchTasks();
   }, []);
 
-  useEffect(() => {
-    console.log(intId);
-  }, [intId]);
-
+  // This is just to set newTask to value of input
   function handleTaskChange(e: React.ChangeEvent<HTMLInputElement>) {
     setNewTask(e.target.value);
   }
 
+  //This adds a task to the list, increses the id, and resets the input
   function handleAddTask(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const newTasks = [...tasks];
+    setIntId(intId + 1);
     newTasks.push({
       text: newTask,
-      id: 0,
+      id: intId,
       completed: false,
       createdAt: new Date().toISOString(),
     });
     setTasks(newTasks);
     setNewTask('');
-    setIntId(intId + 1);
+    localStorage.setItem('tasks', JSON.stringify(newTasks));
   }
 
+  //This removes a task from the list based on id
   function handleDeleteTask(id: number) {
     const newTasks = [...tasks];
-    newTasks.splice(id, 1);
+    const index = newTasks.findIndex((task) => task.id === id);
+    newTasks.splice(index, 1);
     setTasks(newTasks);
+    localStorage.setItem('tasks', JSON.stringify(newTasks));
   }
 
   return (
@@ -66,9 +81,9 @@ export default function TaskPage() {
             <button type="submit">Add</button>
           </form>
         </section>
-        {(tasks && tasks.length !== 0 && <TaskList tasks={tasks} />) || (
-          <p>No tasks found. Add a task to get started!</p>
-        )}
+        {(tasks && tasks.length !== 0 && (
+          <TaskList tasks={tasks} deleteTask={handleDeleteTask} />
+        )) || <p>No tasks found. Add a task to get started!</p>}
       </section>
     </main>
   );
